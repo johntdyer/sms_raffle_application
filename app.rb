@@ -77,7 +77,7 @@ post '/msg' do
   tropo.response
 end
 
-post '/hangup.json' do
+post '/hangup' do
    puts Tropo::Generator.parse request.env["rack.input"].read
    Tropo::Generator.on({ :event => 'hangup' }).response
 end
