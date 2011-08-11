@@ -21,17 +21,23 @@ jQuery(document).ready(function() {
           $("td#phone").html(phone_number);
           $("td#email").html(email);
         }else{
-          $("td#name").html("-");
-          $("td#phone").html("-");
-          $("td#email").html("-");
-        }
-      },
-      error: function(xhr, textStatus, errorThrown) {
-        console.log("oh shit");
-        console.log(xhr);
+         $.gritter.add({
+            title: "No one left",
+            text: "Everyone already won something",
+            image: 'images/fail.png'
+          });
+        
+        $("td#name").html("-");
+        $("td#phone").html("-");
+        $("td#email").html("-");
       }
-    });
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      console.log("oh shit");
+      console.log(xhr);
+    }
   });
+});
   
   $("input#send_notification").click(function(){
     if(phone_number==null){
@@ -42,9 +48,6 @@ jQuery(document).ready(function() {
         image: 'images/fail.png'
       });
     }else{
-    // var phone_number = "14074740214";
-    // var email = "john@krumpt.com";
-    // var user_name = "John";
       $.ajax({
         url: '/send_notification',
         type: 'POST',
@@ -52,10 +55,21 @@ jQuery(document).ready(function() {
         data: "phone_number="+phone_number+"&email="+email+"&user_name="+user_name,
         complete: function(xhr, textStatus) {
           console.log(xhr.responseText);
+          $.gritter.add({
+            title: "Sent alert",
+            text: "We have sent an alert to "+user_name,
+            image: 'images/success.png'
+          });
+          $("td#the_winner").hide();
         },
         error: function(xhr, textStatus, errorThrown) {
           console.log("oh shit");
           console.log(xhr);
+            $.gritter.add({
+              title: "Error",
+              text: "oh shit, something bad happened",
+              image: 'images/error.png'
+            });
         }
       });
     }

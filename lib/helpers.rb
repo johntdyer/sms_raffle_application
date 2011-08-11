@@ -17,7 +17,7 @@ module Helpers
             :rand=>rand
           }.merge(opts)
 
-        response = RestClient.put COUCH_URL + "/" + CGI.escape(opts[:phone_number]), data.to_json,:content_type=>'application/json'
+        response = RestClient.put couch_db_url + "/" + CGI.escape(opts[:phone_number]), data.to_json,:content_type=>'application/json'
         puts response
         response.code.eql?(201) ? true : false
       rescue RestClient::Conflict
@@ -26,12 +26,12 @@ module Helpers
     end
 
     def get_random_user
-        winner_record = JSON.parse(RestClient.get COUCH_URL+"/_design/app/_view/random?limit=1")["rows"]#["value"]
+        winner_record = JSON.parse(RestClient.get couch_db_url+"/_design/app/_view/random?limit=1")["rows"]#["value"]
       if winner_record.empty?
         nil
       else
          session[:winning_record] = winner_record[0]["value"]
-         session[:winner_candidate_url] = COUCH_URL + "/" + CGI.escape(winner_record[0]["value"]["phone_number"])
+         session[:winner_candidate_url] = couch_db_url + "/" + CGI.escape(winner_record[0]["value"]["phone_number"])
          session[:winner_candidate_data]= {:has_won=>true,:_rev=>winner_record[0]["value"]["_rev"]}.merge(winner_record[0]["value"])
       end
     end
@@ -64,6 +64,9 @@ module Helpers
         end
         tropo
     end
-    
+  
+    def couch_db_url
+      "http://#{$config["couch"]["user"]}:#{$config["couch"]["pass"]}@#{$config["couch"]["base_url"]}/#{$config["couch"]["db_name"]}"
+    end
     
 end
