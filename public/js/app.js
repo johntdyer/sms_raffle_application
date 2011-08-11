@@ -1,6 +1,4 @@
-var user_name = null;
-var email = null;
-var phone_number = null;
+var user_name,email,phone_number;
 
 jQuery(document).ready(function() {
   $("#results").hide();
@@ -10,10 +8,10 @@ jQuery(document).ready(function() {
       type: 'POST',
       dataType: 'json',
       complete: function(xhr, textStatus) {
-      $("#results").show();
         console.log(xhr.responseText);
         winner = $.parseJSON(xhr.responseText);
         if(winner!=null){
+          $("#results").show();
           user_name = winner.user_name
           phone_number = winner.phone_number
           email = winner.email
