@@ -41,7 +41,7 @@ def get_random_user
 end
 
 
-def send_msg(session_object)
+def send_msg(sessions_object)
   tropo = Tropo::Generator.new do
       message({
           :to => 'tel:+1'+sessions_object[:session][:parameters][:number_to_msg],
