@@ -21,7 +21,7 @@ include Helpers
 def create_record(opts={})
   begin
     data={
-        :rand=>rand.round(3)
+        :rand=>rand
       }.merge(opts)
 
     response = RestClient.put COUCH_URL + "/" + CGI.escape(opts[:phone_number]), data.to_json,:content_type=>'application/json'
@@ -30,6 +30,11 @@ def create_record(opts={})
     false
   end
 end
+create_record :phone_number=>"4074740214",:user_name=>"john",:email=>"john@krumpt.com"
+
+
+
+
 
 def get_random_user
   winner_record = JSON.parse(RestClient.get COUCH_URL+"/_design/app/_view/random?limit=1")["rows"]#["value"]
@@ -53,7 +58,6 @@ def send_msg(sessions_object)
   end
   tropo
 end
-
 def receive_msg(sessions_object)
    tropo = Tropo::Generator.new do
       on :event => 'continue', :next => '/hangup'
