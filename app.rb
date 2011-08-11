@@ -50,7 +50,7 @@ def send_msg(session_object)
               say     :value => sessions_object[:session][:parameters][:msg]
            end
   end
-      tropo.response
+      tropo
 end
 
 def receive_msg
@@ -62,13 +62,13 @@ def receive_msg
         say "stop trying to cheat, one entry per number"
       end
     end
-    tropo.response
+    tropo
 end
 
 post '/msg' do
   sessions_object = Tropo::Generator.parse request.env['rack.input'].read
   p sessions_object
-  tropo = sessions_object["session"]["initial_text"] ? receive_msg(sessions_object["session"]["initial_text"]) : send_msg(session_object) 
+  tropo = sessions_object["session"]["initial_text"] ? receive_msg(sessions_object["session"]["initial_text"]) : send_msg(sessions_object) 
   tropo.response
 end
 
