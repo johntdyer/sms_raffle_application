@@ -68,7 +68,7 @@ end
 post '/msg' do
   sessions_object = Tropo::Generator.parse request.env['rack.input'].read
   p sessions_object
-  tropo = sessions_object["session"]["initial_text"] ? receive_msg(sessions_object["session"]["initial_text"]) : send_msg(sessions_object) 
+  tropo = sessions_object["session"]["initial_text"] ? receive_msg() : send_msg(sessions_object) 
   tropo.response
 end
 
