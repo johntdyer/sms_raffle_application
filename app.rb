@@ -57,7 +57,7 @@ end
 def receive_msg(sessions_object)
    tropo = Tropo::Generator.new do
       on :event => 'continue', :next => '/hangup'
-      if create_record(:phone_number=>sessions_object[:session][:from][:id],:user_name=>sessions_object["session"]["initial_text"].split(",")[0],:email=>sessions_object["session"]["initial_text"].split(",")[1])
+      if create_record({:phone_number=>sessions_object[:session][:from][:id],:user_name=>sessions_object["session"]["initial_text"].split(",")[0],:email=>sessions_object["session"]["initial_text"].split(",")[1]})
         say 'Got it thanks'
       else
         say "stop trying to cheat, one entry per number"
