@@ -22,7 +22,7 @@ end
 include Helpers
 
 #  opts={:phone_number=>"4075551005",:email=>"Marge@tropo.com",:name=>"Stan Simpson"}; create_record(opts);opts={:phone_number=>"4075551001",:email=>"Bart@tropo.com",:name=>"Bart Simpson"}; create_record(opts);opts={:phone_number=>"4075551002",:email=>"Homer@tropo.com",:name=>"Homer Simpson"}; create_record(opts);opts={:phone_number=>"4075551009",:email=>"col@tropo.com",:name=>"Blah Simpson"}; create_record(opts)
-# opts={:phone_number=>"4075551006",:email=>"New@tropo.com",:name=>"New Simpson"}; create_record(opts)
+# opts={:phone_number=>"4075551007",:email=>"New@tropo.com",:name=>"newer Simpson"}; create_record(opts)
 
 def create_record(opts={})
   begin
@@ -47,7 +47,7 @@ end
 def send_msg(sessions_object)
   tropo = Tropo::Generator.new do
       message({
-          :to => 'tel:+'+sessions_object[:session][:parameters][:number_to_msg],
+          :to => "tel:+#{sessions_object[:session][:parameters][:number_to_msg]}",
           :channel => 'TEXT', 
           :network => 'SMS'}) do
               say     :value => sessions_object[:session][:parameters][:msg]
@@ -87,7 +87,7 @@ get "/" do
 end
 
 post '/get_winner' do
-  get_random_user.to_json
+  a = [get_random_user.to_json]
 end
 
 get '/pick_winner' do 
