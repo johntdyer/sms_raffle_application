@@ -1,6 +1,5 @@
 $LOAD_PATH << './lib' 
-%w(rubygems yaml awesome_print rest-client helpers json sinatra tropo-webapi-ruby).each{|lib| require lib}
-
+%w(rubygems yaml rest-client helpers json sinatra tropo-webapi-ruby).each{|lib| require lib}
 
 begin
   $config = YAML::load(File.read("./config/config.yml"))
@@ -8,10 +7,6 @@ rescue Error::ENOENT
   puts "Did you rename the config_example.yml file to config.yml?"
   exit!
 end
-
-
-
-#$config = YAML::load(File.read("./config/config.yaml"))
 
 COUCH_URL = "http://#{$config["couch"]["user"]}:#{$config["couch"]["pass"]}@#{$config["couch"]["base_url"]}/#{$config["couch"]["db_name"]}"
 
@@ -22,23 +17,9 @@ end
 include Helpers
 enable :sessions
 
-#  opts={:phone_number=>"4075551dsd005",:email=>"Marge@tropo.com",:name=>"Stan Simpson"}; create_record(opts);opts={:phone_number=>"4075551001",:email=>"Bart@tropo.com",:name=>"Bart Simpson"}; create_record(opts);opts={:phone_number=>"4075551002",:email=>"Homer@tropo.com",:name=>"Homer Simpson"}; create_record(opts);opts={:phone_number=>"4075551009",:email=>"col@tropo.com",:name=>"Blah Simpson"}; create_record(opts)
-# opts={:phone_number=>"14074740214",:email=>"Marge@tropo.com",:name=>"Stan Simpson"}; create_record(opts)
-# create_record :phone_number=>"14074740214",:user_name=>"john",:email=>"john@krumpt.com"
-
-
-post '/msg' do
-  sessions_object = Tropo::Generator.parse request.env['rack.input'].read
-  puts sessions_object
-  tropo = sessions_object["session"]["initial_text"] ? receive_msg(sessions_object) : send_msg(sessions_object) 
-  tropo.response
-end
-
-post '/hangup' do
-   puts Tropo::Generator.parse request.env["rack.input"].read
-   Tropo::Generator.on({ :event => 'hangup' }).response
-end
-
+#
+# View Routes
+# 
 get "/" do 
   haml :root
 end
@@ -64,5 +45,23 @@ post "/send_notification" do
     send_an_sms :number_to_msg=>params["phone_number"], :msg => "Hey #{params["user_name"]} you won something cool!!! Come to the front and show this text msg to claim your prize [Tropo Rox]"
   else
     false
+  end
+  
+  #
+  # Tropo WebAPI Routes
+  #
+
+  post '/msg' do
+    sessions_object = Tropo::Generator.parse request.env['rack.input'].read
+    puts sessions_object
+    tropo = sessions_object["session"]["initial_text"] ? receive_msg(sessions_object) : send_msg(sessions_object) 
+    tropo.response
+  end
+
+  post '/hangup' do
+    tropo = Tropo::Generator.new do
+      hangup()
+    end
+    tropo.response
   end
 end
