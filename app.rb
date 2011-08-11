@@ -1,10 +1,11 @@
 %w(rubygems awesome_print rest-client json sinatra tropo-webapi-ruby).each{|lib| require lib}
-TOKEN_ID='MY_TOKEN_ID'
+#TOKEN_ID='MY_TOKEN_ID'
 
 COUCH_BASE = 'tropo.iriscouch.com'
 CLOUDANT_USER = 'jdyer'
 CLOUDANT_PASS = 'Lon3star!'
 DB_NAME='lonestar'
+TOKEN_ID='05e9077d177c1f49a997f21df0bed69f0a19332ddc25a975a29d26a5e29cc0e147235f04597b0aef595a85c3'
 
 COUCH_URL = "http://#{CLOUDANT_USER}:#{CLOUDANT_PASS}@#{COUCH_BASE}/#{DB_NAME}"
 #curl https://krumpt:password@krumpt.cloudant.com/lsrc/_all_docs
@@ -27,12 +28,11 @@ def unique_email
   false
 end
 
-def test_escape(test)
-  CGI.escape("testing=$=")
-end
-
 def create_record(opts={})
-  response = RestClient.put COUCH_URL + "/" + CGI.escape(opts[:winner][:phone_number]), {:winner=>{:phone_number=>"4074740214",:email=>"john@tropo.com",:name=>"Homer Simpson"}}.to_json,:content_type=>'application/json'
+#  opts={:winner=>{:phone_number=>"4074740216",:email=>"john@tropo.com",:name=>"Marge Simpson"}}
+#  opts={:winner=>{:phone_number=>"4074740217",:email=>"john@tropo.com",:name=>"Bart Simpson"}}
+
+  response = RestClient.put COUCH_URL + "/" + CGI.escape(opts[:winner][:phone_number]), data={:rand=>rand.round(3)}.merge(opts).to_json,:content_type=>'application/json'
   response.code.eql?(201) ? true : false
 end
 
@@ -40,25 +40,21 @@ def get_random_user
   JSON.parse(RestClient.get COUCH_URL+"/_design/app/_view/random?limit=1")["rows"][0]["value"]
 end
 
-post '/send_message' do
-  sessions_object = Tropo::Generator.parse request.env['rack.input'].read
-  p sessions_object
-         tropo = Tropo::Generator.new do
-                 message({
-                               :to => 'tel:+1'+sessions_object[:session][:parameters][:number_to_msg],
-                               :channel => 'TEXT', 
-                               :network => 'SMS'}) do
-                                  say     :value => "You won, come to the front and show this text msg to claim your prize [Tropo Rox]"
-                               end
-                 end 
-                 tropo.response
+
+def send_msg(session_object)
+  tropo = Tropo::Generator.new do
+      message({
+          :to => 'tel:+1'+sessions_object[:session][:parameters][:number_to_msg],
+          :channel => 'TEXT', 
+          :network => 'SMS'}) do
+              say     :value => sessions_object[:session][:parameters][:msg]
+           end
+  end
+      tropo.response
 end
 
-post '/initial_text' do
-    sessions_object = Tropo::Generator.parse request.env['rack.input'].read
-    initial_text=sessions_object["session"]["initial_text"]
-
-    tropo = Tropo::Generator.new do
+def receive_msg
+   tropo = Tropo::Generator.new do
       on :event => 'continue', :next => '/hangup'
       if unique_phone_number && unique_email
         say 'Got it thanks'
@@ -66,8 +62,30 @@ post '/initial_text' do
         say "stop trying to cheat, one entry per number"
       end
     end
- tropo.response
+    tropo.response
 end
+
+post '/msg' do
+  sessions_object = Tropo::Generator.parse request.env['rack.input'].read
+  p sessions_object
+  tropo = sessions_object["session"]["initial_text"] ? receive_msg(sessions_object["session"]["initial_text"]) : send_msg(session_object) 
+  tropo.response
+end
+
+# post '/initial_text' do
+#     sessions_object = Tropo::Generator.parse request.env['rack.input'].read
+#     initial_text=sessions_object["session"]["initial_text"]
+# 
+#     tropo = Tropo::Generator.new do
+#       on :event => 'continue', :next => '/hangup'
+#       if unique_phone_number && unique_email
+#         say 'Got it thanks'
+#       else
+#         say "stop trying to cheat, one entry per number"
+#       end
+#     end
+#  tropo.response
+# end
 
 post '/hangup.json' do
    'Received a hangup response!'
@@ -81,7 +99,7 @@ get "/" do
 end
 
 # get '/test' do 
-#   create_record({:winner=>{:phone_number=>"407-474-0214",:email=>"john@tropo.com",:name=>"Homer Simpson"}})
+#   create_record(:winner=>{:phone_number=>"407-474-0214",:email=>"john@tropo.com",:name=>"Homer Simpson"})
 # end
 
 post '/get_winner' do
@@ -93,7 +111,7 @@ get '/pick_winner' do
 end
 
 post "/send_notification" do 
-  
+  send_sms :number_to_msg=>"4074740214", :msg => "You won, come to the front and show this text msg to claim your prize [Tropo Rox]"
 end
 # 
 # post '/send_message.json' do  
