@@ -1,7 +1,5 @@
 $LOAD_PATH << './lib' 
-
 %w(rubygems awesome_print rest-client helpers json sinatra tropo-webapi-ruby).each{|lib| require lib}
-#TOKEN_ID='MY_TOKEN_ID'
 
 COUCH_BASE = 'tropo.iriscouch.com'
 CLOUDANT_USER = 'jdyer'
@@ -10,9 +8,6 @@ DB_NAME='lonestar'
 TOKEN_ID='05e9077d177c1f49a997f21df0bed69f0a19332ddc25a975a29d26a5e29cc0e147235f04597b0aef595a85c3'
 
 COUCH_URL = "http://#{CLOUDANT_USER}:#{CLOUDANT_PASS}@#{COUCH_BASE}/#{DB_NAME}"
-#curl https://krumpt:password@krumpt.cloudant.com/lsrc/_all_docs
-
-# User sends email, we log initial text and number, user can only enter once
 
 configure do
   set :views, "#{File.dirname(__FILE__)}/views"
@@ -21,12 +16,17 @@ end
 
 include Helpers
 
-#  opts={:phone_number=>"4075551005",:email=>"Marge@tropo.com",:name=>"Stan Simpson"}; create_record(opts);opts={:phone_number=>"4075551001",:email=>"Bart@tropo.com",:name=>"Bart Simpson"}; create_record(opts);opts={:phone_number=>"4075551002",:email=>"Homer@tropo.com",:name=>"Homer Simpson"}; create_record(opts);opts={:phone_number=>"4075551009",:email=>"col@tropo.com",:name=>"Blah Simpson"}; create_record(opts)
-# opts={:phone_number=>"4075551007",:email=>"New@tropo.com",:name=>"newer Simpson"}; create_record(opts)
+#  opts={:phone_number=>"4075551dsd005",:email=>"Marge@tropo.com",:name=>"Stan Simpson"}; create_record(opts);opts={:phone_number=>"4075551001",:email=>"Bart@tropo.com",:name=>"Bart Simpson"}; create_record(opts);opts={:phone_number=>"4075551002",:email=>"Homer@tropo.com",:name=>"Homer Simpson"}; create_record(opts);opts={:phone_number=>"4075551009",:email=>"col@tropo.com",:name=>"Blah Simpson"}; create_record(opts)
 
 def create_record(opts={})
   begin
-    response = RestClient.put COUCH_URL + "/" + CGI.escape(opts[:phone_number]), data={:rand=>rand.round(3)}.merge(opts).to_json,:content_type=>'application/json'
+    data={
+        :rand=>rand.round(3),
+        :user_name=> opts[:user_name],
+        :email=> opts[:email]
+      }.merge(opts)
+
+    response = RestClient.put COUCH_URL + "/" + CGI.escape(opts[:phone_number]), data.to_json,:content_type=>'application/json'
     response.code.eql?(201) ? true : false
   rescue RestClient::Conflict
     false
@@ -53,13 +53,13 @@ def send_msg(sessions_object)
               say     :value => sessions_object[:session][:parameters][:msg]
            end
   end
-      tropo
+  tropo
 end
 
 def receive_msg(sessions_object)
    tropo = Tropo::Generator.new do
       on :event => 'continue', :next => '/hangup'
-      if create_record(:phone_number=>sessions_object[:session][:from][:id])
+      if create_record(:phone_number=>sessions_object[:session][:from][:id],:user_name=>sessions_object["session"]["initial_text"].split(",")[0],:email=>sessions_object["session"]["initial_text"].split(",")[1])
         say 'Got it thanks'
       else
         say "stop trying to cheat, one entry per number"
@@ -70,16 +70,14 @@ end
 
 post '/msg' do
   sessions_object = Tropo::Generator.parse request.env['rack.input'].read
-  p sessions_object
+  puts sessions_object
   tropo = sessions_object["session"]["initial_text"] ? receive_msg(sessions_object) : send_msg(sessions_object) 
   tropo.response
 end
 
 post '/hangup.json' do
-   'Received a hangup response!'
-   json_string = request.env["rack.input"].read
-   tropo_session = Tropo::Generator.parse json_string
-   p tropo_session
+   puts Tropo::Generator.parse request.env["rack.input"].read
+   Tropo::Generator.on({ :event => 'hangup' }).response
 end
 
 get "/" do 
@@ -87,13 +85,17 @@ get "/" do
 end
 
 post '/get_winner' do
-  a = [get_random_user.to_json]
+  a = [get_random_user.to_json] 
 end
 
 get '/pick_winner' do 
   haml :winner
 end
 
-get "/send_notification" do 
-  send_sms :number_to_msg=>"14074740214", :msg => "You won, come to the front and show this text msg to claim your prize [Tropo Rox]"
+post "/send_notification" do 
+  if JSON.parse(request.env['rack.input'].read)["phone_number"]
+    send_an_sms :number_to_msg=>JSON.parse(request.env['rack.input'].read)["phone_number"], :msg => "You won, come to the front and show this text msg to claim your prize [Tropo Rox]"
+  else
+    false
+  end
 end

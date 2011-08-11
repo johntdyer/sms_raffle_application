@@ -1,32 +1,4 @@
-:javascript
-  jQuery(document).ready(function() {
-    $("#results").hide();
-    $("input#pick_winner").click(function(){
-      $.ajax({
-        url: '/get_winner',
-        type: 'POST',
-        dataType: 'json',
-        complete: function(xhr, textStatus) {
-        $("#results").show();
-          console.log(xhr.responseText);
-          winner = $.parseJSON(xhr.responseText);
-          if(winner!=null){
-            $("td#name").html(winner.name);
-            $("td#phone").html(winner.phone_number);
-            $("td#email").html(winner.email);
-          }else{
-            $("td#name").html("-");
-            $("td#phone").html("-");
-            $("td#email").html("-");
-          }
-        },
-        error: function(xhr, textStatus, errorThrown) {
-          console.log("oh shit");
-          console.log(xhr);
-        }
-      });
-    });
-  });
+%script{:type => "text/javascript", :src => "js/app.js"}
 %input{:id=>"pick_winner", :type => "button", :value=>"Pick Winner"}/
 #results
   %table
