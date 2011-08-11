@@ -42,15 +42,16 @@ jQuery(document).ready(function() {
         image: 'images/fail.png'
       });
     }else{
+    // var phone_number = "14074740214";
+    // var email = "john@krumpt.com";
+    // var user_name = "John";
       $.ajax({
         url: '/send_notification',
         type: 'POST',
         dataType: 'json',
-        data: "{'phone_number':"+phone_number+",'email':"+email+",'name':"+user_name+"}",
+        data: "phone_number="+phone_number+"&email="+email+"&user_name="+user_name,
         complete: function(xhr, textStatus) {
           console.log(xhr.responseText);
-          
-         
         },
         error: function(xhr, textStatus, errorThrown) {
           console.log("oh shit");
