@@ -1,0 +1,12 @@
+!!!
+%html
+  %head
+    %title= "LSRC 2011"
+    %script{:type => "text/javascript", :src => "js/jquery.js"}
+  %body
+    #container
+      #header
+        #logo
+      #content= yield
+  #footer
+    %p#legal= "&mdash; &copy; #{Time.now.strftime('%Y')} Tropo &mdash;"
