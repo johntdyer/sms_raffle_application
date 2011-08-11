@@ -17,13 +17,11 @@ end
 include Helpers
 
 #  opts={:phone_number=>"4075551dsd005",:email=>"Marge@tropo.com",:name=>"Stan Simpson"}; create_record(opts);opts={:phone_number=>"4075551001",:email=>"Bart@tropo.com",:name=>"Bart Simpson"}; create_record(opts);opts={:phone_number=>"4075551002",:email=>"Homer@tropo.com",:name=>"Homer Simpson"}; create_record(opts);opts={:phone_number=>"4075551009",:email=>"col@tropo.com",:name=>"Blah Simpson"}; create_record(opts)
-
+# opts={:phone_number=>"14074740214",:email=>"Marge@tropo.com",:name=>"Stan Simpson"}; create_record(opts)
 def create_record(opts={})
   begin
     data={
-        :rand=>rand.round(3),
-        :user_name=> opts[:user_name],
-        :email=> opts[:email]
+        :rand=>rand.round(3)
       }.merge(opts)
 
     response = RestClient.put COUCH_URL + "/" + CGI.escape(opts[:phone_number]), data.to_json,:content_type=>'application/json'
