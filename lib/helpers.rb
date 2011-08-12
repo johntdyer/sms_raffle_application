@@ -39,11 +39,12 @@ module Helpers
     def send_msg(sessions_object)
       tropo = Tropo::Generator.new do
           message({
-              :to => "tel:+#{sessions_object[:session][:parameters][:number_to_msg]}",
-              :channel => 'TEXT', 
-              :network => 'SMS'}) do
-                  say     :value => sessions_object[:session][:parameters][:msg]
-               end
+                  :to => "tel:+#{sessions_object[:session][:parameters][:number_to_msg]}",
+                  :channel => 'TEXT', 
+                  :network => 'SMS'
+                  }) do
+                    say :value => sessions_object[:session][:parameters][:msg]
+                  end
       end
       tropo
     end
@@ -53,9 +54,9 @@ module Helpers
           on :event => 'continue', :next => '/hangup'
             if sessions_object["session"]["initial_text"].split(",").length.eql?(2)
               if create_record({:phone_number=>sessions_object[:session][:from][:id],:user_name=>sessions_object["session"]["initial_text"].split(",")[0].chomp,:email=>sessions_object["session"]["initial_text"].split(",")[1].chomp})
-                say 'Got it thanks'
+                say 'Got it thanks [Powered by Tropo http://tropo.com]'
               else
-                say "stop trying to cheat, one entry per number"
+                say "stop trying to cheat, one entry per number [Powered by Tropo http://tropo.com]"
               end
             else
               say "I didn't understand you, please use this format: 
