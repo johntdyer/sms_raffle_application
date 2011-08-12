@@ -25,6 +25,9 @@ module Helpers
       end
     end
 
+    def has_already_won(has_won)
+      has_won ? Haml::Engine.new('%img{:src => "images/check_mark.png", :alt => "tropo-logo",:height=>"20px",:width=>"20px"}/').render : ""
+    end
     def get_random_user
         winner_record = JSON.parse(RestClient.get couch_db_url+"/_design/app/_view/random?limit=1")["rows"]#["value"]
       if winner_record.empty?

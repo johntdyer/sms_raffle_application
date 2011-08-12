@@ -15,13 +15,13 @@
   -@registrations.each do |each|
     %tr
       %td
-        =each["doc"]["name"]
+        =each["doc"]["user_name"]
       %td
         =each["doc"]["phone_number"]
       %td
         =each["doc"]["email"]        
       %td
-        =each["doc"]["has_won"]
+        =has_already_won(each["doc"]["has_won"])
 
 %h1#winner_title
 %input{:id=>"pick_winner", :type => "button", :value=>"Pick Winner"}/
@@ -37,7 +37,7 @@
           Email
     %tbody
       %tr#the_winner
-        %td#name
+        %td#user_name
         %td#phone
         %td#email
     

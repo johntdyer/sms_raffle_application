@@ -15,7 +15,7 @@ jQuery(document).ready(function() {
           user_name = winner.user_name
           phone_number = winner.phone_number
           email = winner.email
-          $("td#name").html(user_name);
+          $("td#user_name").html(user_name);
           $("td#phone").html(phone_number);
           $("td#email").html(email);
         }else{
@@ -25,7 +25,7 @@ jQuery(document).ready(function() {
             image: 'images/fail.png'
           });
         
-        $("td#name").html("-");
+        $("td#user_name").html("-");
         $("td#phone").html("-");
         $("td#email").html("-");
       }
