@@ -5,3 +5,7 @@ couch:
   db_name: 
 tropo:
   token_id: 
+messages:
+  accepted:
+  duplicate_entry:
+  branding: 

@@ -18,7 +18,7 @@ Rack Application
 --------
     server {
        listen       80;
-       server_name  lsrc.voxeolabs.com;
+       server_name  localhost;
        root /www/contest_app/public;
        passenger_enabled on;
      }
