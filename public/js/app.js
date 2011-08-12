@@ -8,7 +8,7 @@ jQuery(document).ready(function() {
       type: 'POST',
       dataType: 'json',
       complete: function(xhr, textStatus) {
-        console.log(xhr.responseText);
+        console.log("responseText => " + xhr.responseText);
         winner = $.parseJSON(xhr.responseText);
         if(winner!=null){
           $("#results").show();
@@ -72,7 +72,4 @@ jQuery(document).ready(function() {
       });
     }
   });
-  
-  
-  
 });

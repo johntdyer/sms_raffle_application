@@ -6,11 +6,10 @@
     %script{:type => "text/javascript", :src => "js/jquery.gritter.min.js"}
     %script{:type => "text/javascript", :src => "js/app.js"}
     %link{:rel => "stylesheet", :href => "css/jquery.gritter.css"}
-    
+    %link{:rel => "stylesheet", :href => "css/application.css"}
   %body
     #container
-      #header
-        #logo
       #content= yield
-  #footer
-    %p#legal= "&mdash; &copy; #{Time.now.strftime('%Y')} Tropo &mdash;"
+    #footer
+      %p#legal= "&mdash; &copy; #{Time.now.strftime('%Y')} Tropo &mdash;"
+      %img#tropo_logo{:src => "images/tropo.png", :alt => "tropo-logo"}/
