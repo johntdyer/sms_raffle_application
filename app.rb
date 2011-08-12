@@ -38,7 +38,7 @@ post "/send_notification" do
   if session[:winner_candidate_data]
     update_record = RestClient.put session[:winner_candidate_url],session[:winner_candidate_data].to_json,:content_type=>'application/json' 
     update_record.code.eql?(201) ? session[:winner_record] : "error"     
-    send_an_sms :number_to_msg=>params["phone_number"], :msg => "Hey #{params["user_name"]} you won something cool!!! Come to the front and show this text msg to claim your prize [Tropo Rocks | http://tropo.com]"
+    send_an_sms :number_to_msg=>params["phone_number"], :msg => "Hey #{params["user_name"]} you won something cool!!! Come to the front & show this SMS to claim your awesomeness [ Powered by Tropo | http://tropo.com ]"
   else
     false
   end

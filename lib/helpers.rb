@@ -57,9 +57,9 @@ module Helpers
           on :event => 'continue', :next => '/hangup'
             if sessions_object["session"]["initial_text"].split(",").length.eql?(2)
               if create_record({:phone_number=>sessions_object[:session][:from][:id],:user_name=>sessions_object["session"]["initial_text"].split(",")[0].chomp,:email=>sessions_object["session"]["initial_text"].split(",")[1].chomp})
-                say 'Got it thanks [Powered by Tropo http://tropo.com]'
+                say 'Great, we have got it! Thanks@ [Powered by Tropo http://tropo.com]'
               else
-                say "stop trying to cheat, one entry per number [Powered by Tropo http://tropo.com]"
+                say "Hey buddy no cheating! It's only one entry per phone number [ Powered by Tropo http://tropo.com ]"
               end
             else
               say "I didn't understand you, please use this format: 
